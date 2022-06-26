@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html>
+
+<body onload="go();"></body>
+<!-- Default Dynamic Section -->
+<div id="default-content" class="dynamic-content">
+    <div class="category-selection-div">
+        <span class="category-selection" onclick="changeUrl('primary')">Primary</span>
+        <span class="category-selection" onclick="changeUrl('secondary')">Secondary</span>
+        <span class="category-selection" onclick="changeUrl('melee')">Melee</span>
+        <span class="category-selection" onclick="changeUrl('warframe')">Warframe</span>
+        <span class="category-selection" onclick="changeUrl('archwing')">Archwing</span>
+        <span class="category-selection" onclick="changeUrl('archgun')">Archgun</span>
+        <span class="category-selection" onclick="changeUrl('archmelee')">Archmelee</span>
+        <span class="category-selection" onclick="changeUrl('companion')">Companion</span>
+        <span class="category-selection" onclick="changeUrl('miscellaneous')">Miscellaneous</span>
+    </div>
+</div>
+<!-- Dynamic Section 1 -->
+<div id="primary" class="dynamic-content">
+    <div id="prim-list" class="prim-list">
+        <table id="prim-table">
+
+        </table>
+    </div>
+</div>
+<!-- Dynamic Section 2 -->
+<div id="oranges" class="dynamic-content">
+    I like oranges
+</div>
+<!-- Dynamic Section 3 -->
+<div id="bananas" class="dynamic-content">
+    I like bananas
+</div>
+
+</html>
+
+<style>
+    html {
+        background-color: #363548;
+        overflow: hidden;
+    }
+
+    .dynamic-content {
+        display: none;
+    }
+
+    .shown {
+        display: block;
+    }
+
+    .category-selection {
+        background-color: #363548;
+        border: 1px solid #5e5e67;
+        border-radius: 2px;
+        font-size: 150%;
+        width: 20%;
+        text-align: center;
+        height: 4%;
+        transition-duration: 0.15s;
+    }
+
+    .category-selection:hover {
+        background-color: #615e84;
+        transition-duration: 0.15s;
+    }
+
+    .category-selection-div {
+        color: white;
+        position: absolute;
+        display: flex;
+        flex-direction: column;
+        font-family: 'Courier New', Courier, monospace;
+        top: 32%;
+        left: 40%;
+        width: 100%;
+        height: 100%;
+    }
+
+    .prim-list {
+        overflow: scroll;
+        font-family: 'Courier New', Courier, monospace;
+        top: 2%;
+        left: 0px;
+        position: absolute;
+        color: white;
+        width: 100%;
+        height: 100%;
+    }
+
+    .listEntryDiv {
+        display: flex;
+        flex-direction: row;
+        height: 100px;
+    }
+
+    .listEntry {
+        position: inherit;
+        font-size: 150%;
+        font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+        top: 50%;
+        left: 1%;
+        height: 100%;
+        /* width: 100%; */
+        max-width: 20%;
+        border: 1px solid white;
+        border-collapse: separate;
+        border-spacing: 100px 100px;
+    }
+
+    .checkbox {
+        border: 1px solid white;
+        border-collapse: separate;
+        border-spacing: 100px 100px;
+    }
+</style>
+
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"> </script>
+
+<script>
+    function changeUrl(destParam) {
+        var url = window.location.href;
+        var dest = "?"
+        url.indexOf("?") > 0 ? url = url.substring(0, url.indexOf("?")) : url = url;
+        dest += "dc=" + destParam;
+        window.location.href = url + dest;
+    }
+
+    // Parse the URL parameter
+    function go() {
+        console.log("Test");
+
+        function getParameterByName(name, url) {
+            if (!url) url = window.location.href;
+            name = name.replace(/[\[\]]/g, "\\$&");
+            var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+                results = regex.exec(url);
+            if (!results) return null;
+            if (!results[2]) return '';
+            return decodeURIComponent(results[2].replace(/\+/g, " "));
+        }
+        // Give the parameter a variable name
+        var category = getParameterByName('dc');
+        var id = getParameterByName('id');
+
+
+        // Check if the URL parameter is apples
+        if (category == 'primary') {
+            document.getElementById('primary').className = 'shown';
+
+            $.getJSON("completed.json", function (data) {
+                console.log(data)
+                data.primaries.forEach(weapon => {
+                    var entryTr = document.createElement('tr')
+                    // entryTr.className = "listEntryDiv"
+                    var checkbox = document.createElement('th')
+                    checkbox.className = "checkbox"
+                    var input = document.createElement('input')
+                    input.type = "checkbox"
+                    checkbox.appendChild(input)
+                    entryTr.appendChild(checkbox)
+                    var entry = document.createElement('th')
+                    entry.className = 'listEntry'
+                    entry.appendChild(document.createTextNode(weapon))
+                    entryTr.appendChild(entry)
+                    document.getElementById('prim-table').appendChild(entryTr)
+                })
+            });
+        }
+        // Check if the URL parameter is oranges
+        else if (category == 'oranges') {
+            document.getElementById('oranges').className = 'shown';
+        }
+        // Check if the URL parameter is bananas
+        else if (category == 'bananas') {
+            document.getElementById('bananas').className = 'shown';
+        }
+        // Check if the URL parmeter is empty or not defined, display default content
+        else {
+            document.getElementById('default-content').className = 'shown';
+        }
+    };
+
+    function readTextFile(file) {
+        var rawFile = new XMLHttpRequest();
+        rawFile.open("GET", file, false);
+        rawFile.onreadystatechange = function () {
+            if (rawFile.readyState === 4) {
+                if (rawFile.status === 200 || rawFile.status == 0) {
+                    var allText = rawFile.responseText;
+                    alert(allText);
+                }
+            }
+        }
+        rawFile.send(null);
+    }
+
+</script>
