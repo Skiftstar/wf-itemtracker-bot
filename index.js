@@ -302,7 +302,7 @@ function loadStuff() {
                 return;
             }
             const itemCopy = JSON.parse(JSON.stringify(item))
-            if (craftedItems.melees.includes(item.name)) {
+            if (craftedItems.warframes.includes(item.name)) {
                 itemCopy.name = itemCopy.name + config.craftedFlair
             }
             warframes.push(itemCopy)
