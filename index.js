@@ -27,7 +27,7 @@ client.on('message', message => {
         let itemName = args.join(' ')
         if (removeWeapon(itemName)) return message.reply("Successfully finished: " + itemName)
         return message.reply("Item already finished or doesn't exist!")
-    } 
+    }
 
     if (cmd == "<crafted") {
         if (args.length == 0) {
@@ -58,6 +58,22 @@ client.on('message', message => {
         return message.reply("Item doesn't exist or is already leveled!")
     }
 
+    if (cmd == "<ingredientlist") {
+        let items = []  
+        options.forEach(option => {
+
+            option.arr.forEach(item => {
+                if (item.name.includes('---CRAFTED---')) {
+                    return;
+                }
+                items.push(item)
+            })
+        })
+        const list = getIngredientList(items)
+        const ingredientEmbed = genIngredientEmbed(list);
+        message.channel.send({ embeds: [ingredientEmbed] })
+    }
+
     if (cmd == "<info") {
         if (args.length == 0) {
             return message.reply("Provide a category Name!");
@@ -69,22 +85,79 @@ client.on('message', message => {
                 return;
             }
         })
-        function genInfoEmbed(array) {
+        function genInfoEmbed(array, category) {
             let embedArr = [];
+            let items = []
 
             array.forEach(item => {
+                if (item.name.includes('---CRAFTED---')) {
+                    return;
+                }
+                items.push(item)
                 embedArr.push(genItemInfoEmbed(item))
             })
+
+            const ingredientEmbed = genIngredientEmbed(getIngredientList(items), `Needed Ingredients for Category ${category}`);
+            embedArr.push(ingredientEmbed)
 
             while (embedArr.length > 10) {
                 message.channel.send({ embeds: embedArr.slice(0, 10) })
                 embedArr = embedArr.slice(10)
+                console.log(embedArr)
+            }
+            if (embedArr.length > 0) {
+                message.channel.send({ embeds: embedArr })
             }
         }
 
     }
     return;
 })
+
+function genIngredientEmbed(ingredientMap, customTitle) {
+    const ingredientMapSorted = new Map([...ingredientMap.entries()].sort((a, b) => b[1] - a[1]));
+
+    let embed = new Discord.MessageEmbed()
+    embed.setTitle(customTitle ?? "Needed Ingredients")
+    embed.setDescription("Shows all needed ingredients (not counting subParts like blades and not counting crafting cost for subparts like systems)")
+    embed.setColor(0x00AE86)
+    let items = []
+    for (const key of ingredientMapSorted.keys()) {
+        items.push(`${key} : ${ingredientMap.get(key)}`)
+    }
+    if (items.length > 30) {
+        let index = 1;
+        while (items.length > 0) {
+            embed.addField(`Ingredients ${index}`, items.splice(0, 30).join("\n"))
+            items = items.splice(0, 30)
+            index++
+        }
+    } else {
+        embed.addField("Ingredients", items.join("\n"))
+    }
+    return embed;
+}
+
+function getIngredientList(items) {
+    let ingredientsMap = new Map();
+
+    items.forEach(item => {
+        if (item.components) {
+            item.components.forEach(component => {
+                if (!component.uniqueName.startsWith('/Lotus/Types/Items/')) {
+                    return;
+                }
+                if (ingredientsMap.has(component.name)) {
+                    ingredientsMap.set(component.name, ingredientsMap.get(component.name) + component.itemCount)
+                } else {
+                    ingredientsMap.set(component.name, component.itemCount)
+                }
+            })
+        }
+    })
+
+    return ingredientsMap;
+}
 
 function genItemInfoEmbed(item) {
     let embed = new Discord.MessageEmbed()
