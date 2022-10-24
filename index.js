@@ -4,7 +4,7 @@ const axios = require('axios');
 
 const primaries = [], secondaries = [], melees = [], warframes = [], archwings = [], archguns = [], archmelees = [], companions = []
 const options = [{ arr: primaries, name: "primaries" }, { arr: secondaries, name: "secondaries" }, { arr: melees, name: "melees" }, { arr: warframes, name: "warframes" }, { arr: archwings, name: "archwings" }, { arr: archguns, name: "archguns" }, { arr: archmelees, name: "archmelees" }, { arr: companions, name: "companions" }]
-
+let itemsMap = new Map();
 
 const craftedItems = JSON.parse(fs.readFileSync('./crafted.json', 'utf8'))
 const completedItems = JSON.parse(fs.readFileSync('./completed.json', 'utf8'))
@@ -147,6 +147,7 @@ function getIngredientList(items) {
                 if (!component.uniqueName.startsWith('/Lotus/Types/Items/')) {
                     return;
                 }
+                // console.log("FROM ITEM MAP", itemsMap.get(component.uniqueName))
                 if (ingredientsMap.has(component.name)) {
                     ingredientsMap.set(component.name, ingredientsMap.get(component.name) + component.itemCount)
                 } else {
@@ -308,27 +309,37 @@ function loadStuff() {
     let companionsTemp = []
 
     const obj = [{ arr: primariesTemp, categories: ["Primary"] }, { arr: secondariesTemp, categories: ["Secondary"] }, { arr: meleesTemp, categories: ["Melee"] }, { arr: warframesTemp, categories: ["Warframes"] }, { arr: archwingsTemp, categories: ["Archwing"] }, { arr: archgunsTemp, categories: ["Arch-Gun"] }, { arr: archmeleesTemp, categories: ["Arch-Melee"] }, { arr: companionsTemp, categories: ["Pets", "Sentinels"] }]
+    const toSkip = ['Glyphs', 'Sigils', 'Enemy', 'Quests', 'Mods', 'Fish', 'Skins', 'Node', 'Relics']
 
     axios
         .get('https://api.warframestat.us/items')
         .then(res => {
             console.log(`statusCode: ${res.status}`);
             const categories = [];
-            res.data.forEach(item => {
-                if (!categories.includes(item.category)) {
-                    categories.push(item.category)
-                }
+            if (res.data) {
+                apiResponse = res.data;
+                res.data.forEach(item => {
+                    if (!categories.includes(item.category)) {
+                        categories.push(item.category)
+                    }
 
-                obj.forEach(object => {
-                    if (object.categories.includes(item.category)) {
-                        object.arr.push(item)
+                    if (toSkip.includes(item.category)) {
                         return;
                     }
-                })
-            })
-            filterAndPrint()
-            // console.log(categories);
+    
+                    if (item.components) {
+                        itemsMap.set(item.uniqueName, item.components)
+                    }
 
+                    obj.forEach(object => {
+                        if (object.categories.includes(item.category)) {
+                            object.arr.push(item)
+                            return;
+                        }
+                    })
+                })
+            }
+            filterAndPrint()
             console.log(client.user.username + ' is online!');
         })
         .catch(error => {
