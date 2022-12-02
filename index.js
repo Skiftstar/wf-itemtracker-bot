@@ -229,7 +229,7 @@ function removeWeapon(itemName) {
             if (item.name.toLowerCase() == itemName) {
                 completedItems[option.name].push(item.name)
                 removeItemOnce(option.arr, item)
-                fs.writeFileSync('./completed.json', JSON.stringify(completedItems))
+                fs.writeFileSync('./completed.json', JSON.stringify(completedItems).replaceAll(",", ",\n"))
                 reloadEmbeds()
                 return true;
             } else if (item.name.toLowerCase().includes(config.craftedFlair.toLowerCase()) && item.name.split(config.craftedFlair)[0].toLowerCase() == itemName.toLowerCase()) {
@@ -237,7 +237,7 @@ function removeWeapon(itemName) {
                 itemCopy.name = itemCopy.name.split(config.craftedFlair)[0];
                 completedItems[option.name].push(itemCopy.name)
                 removeItemOnce(option.arr, item)
-                fs.writeFileSync('./completed.json', JSON.stringify(completedItems))
+                fs.writeFileSync('./completed.json', JSON.stringify(completedItems).replaceAll(",", ",\n"))
                 reloadEmbeds()
                 return true;
                 break;
@@ -260,7 +260,7 @@ function addCraft(itemName) {
                 craftedItems[option.name].push(item.name)
                 item.name = item.name + config.craftedFlair
                 option.arr.push(item)
-                fs.writeFileSync('./crafted.json', JSON.stringify(craftedItems))
+                fs.writeFileSync('./crafted.json', JSON.stringify(craftedItems).replaceAll(",", ",\n"))
                 reloadEmbeds()
                 return true
             }
