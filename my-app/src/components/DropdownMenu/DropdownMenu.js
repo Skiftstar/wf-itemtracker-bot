@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import MenuIcon from '@mui/icons-material/Menu';
 
 function DropdownMenu(props) {
 
@@ -6,8 +7,8 @@ function DropdownMenu(props) {
     const [isOpen, setIsOpen] = useState(false)
 
     const items = props.items.map((item) => (
-        <div key={item} style={isOpen ? {display: 'block'} : {display: 'none'}} className='align-middle text-center leading-[150%] hover:bg-secondary-color/50 w-full h-[15%] text-3xl border-secondary-color border-2 border-solid text-highlight-color cursor-pointer' onClick={() => {props.changeWindow(item); setCurrItem(item); setIsOpen(false)}}>
-            <div className='h-full w-full text-center'>
+        <div key={item} style={isOpen ? {display: 'block'} : {display: 'none'}} className='left-[2%] w-full text-4xl text-highlight-color cursor-pointer' onClick={() => {props.changeWindow(item); setCurrItem(item); setIsOpen(false)}}>
+            <div className='h-full w-full text-center mb-[4%]'>
                 {item}
             </div>
         </div>
@@ -15,13 +16,15 @@ function DropdownMenu(props) {
 
   return (
     <div>
-        <div onClick={() => {setIsOpen(!isOpen)}} className='text-3xl cursor-pointer h-[15%] w-full rounded text-highlight-color border-highlight-color border-solid border-2'>
-            <div className='h-full w-full align-middle leading-[150%] text-center'>
-                {currItem}
+        <div onClick={() => {setIsOpen(!isOpen)}} className='text-3xl cursor-pointer text-highlight-color'>
+            <div className='absolute left-[2%] top-[3%]'>
+                <MenuIcon className='absolute scale-[200%]' fontSize='large'/>
             </div>
         </div>
-        <div>
+        <div className='h-full w-full top-0 left-0' style={isOpen ? {backgroundColor: '#FF0000'} : {backgroundColor: '#201e2b'}}>
+            <div className='absolute translate-y-[-50%] top-[50%] left-[2%]'>
                 {items}
+            </div>
         </div>
     </div>
   );
