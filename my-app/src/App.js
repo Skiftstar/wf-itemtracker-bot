@@ -1,8 +1,9 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import './App.css';
 import DropdownMenu from './components/DropdownMenu/DropdownMenu';
 import Navbar from './components/Navbar/Navbar';
 import Dropdown from 'react-bootstrap/Dropdown';
+import WeaponScreen from './components/WeaponScreen/WeaponScreen';
 
 
 function App() {
@@ -17,13 +18,21 @@ function App() {
   const completedItems = require('./data/completed.json');
   const config = require('./data/config.json');
 
+    const [currSelected, setCurrSelected] = useState(warframes)
+
   useEffect(() => {
     loadStuff();
     loaded = true;
   })
 
-  const changeWindow = () => {
-
+  const changeWindow = (newItem) => {
+    options.every(option => {
+        if (option.name.toLowerCase() === newItem.toLowerCase()) {
+            setCurrSelected(option.arr)
+            return false;
+        }
+        return true;
+    })
   }
 
   const loadStuff = () => {
@@ -166,6 +175,8 @@ function App() {
             }
             companions.push(itemCopy)
         })
+
+        console.log(warframes)
     }
 }
 
@@ -175,6 +186,11 @@ function App() {
         <DropdownMenu
           changeWindow={changeWindow}
           items={['Warframes', 'Primaries', 'Secondaries', 'Melees', 'Archwings', 'Archguns', 'Archmelees', 'Companions']}
+        />
+      </div>
+      <div className='mt-[5%]'>
+        <WeaponScreen
+            items={currSelected}
         />
       </div>
     </div>
