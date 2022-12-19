@@ -15,15 +15,15 @@ function DropdownMenu(props) {
     ));
 
   return (
-    <div>
+    <div className='w-full h-[100vh]'>
         <div onClick={() => {setIsOpen(!isOpen)}} className='text-3xl cursor-pointer text-highlight-color'>
             <div className='absolute left-[2%] top-[3%]'>
                 <MenuIcon className='absolute scale-[200%]' fontSize='large'/>
             </div>
         </div>
-        <div className='h-full w-full top-0 left-0' style={isOpen ? {backgroundColor: '#FF0000'} : {backgroundColor: '#201e2b'}}>
-            <div className='absolute translate-y-[-50%] top-[50%] left-[2%]'>
-                {items}
+        <div className='h-[100%] w-[25%] left-0' style={isOpen ? {backgroundColor: "rgba(40, 38, 54, 1)"} : {backgroundColor: '#201e2b'}}>
+            <div className='pt-[50%] translate-y-[50%]'>
+                    {items}
             </div>
         </div>
     </div>

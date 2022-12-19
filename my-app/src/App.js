@@ -29,6 +29,7 @@ function App() {
     options.every(option => {
         if (option.name.toLowerCase() === newItem.toLowerCase()) {
             setCurrSelected(option.arr)
+            console.log("Found new", newItem)
             return false;
         }
         return true;
@@ -188,7 +189,7 @@ function App() {
           items={['Warframes', 'Primaries', 'Secondaries', 'Melees', 'Archwings', 'Archguns', 'Archmelees', 'Companions']}
         />
       </div>
-      <div className='mt-[5%]'>
+      <div className='mt-[5%] z-0'>
         <WeaponScreen
             items={currSelected}
         />

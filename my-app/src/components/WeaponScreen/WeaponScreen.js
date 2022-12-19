@@ -10,7 +10,7 @@ function WeaponScreen(props) {
 
 
     return (
-        <div>
+        <div className="absolute w-full top-[10%]">
             {items}
         </div>
     )
