@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import './App.css';
 import DropdownMenu from './components/DropdownMenu/DropdownMenu';
 import Navbar from './components/Navbar/Navbar';
-import Dropdown from 'react-bootstrap/Dropdown';
 import WeaponScreen from './components/WeaponScreen/WeaponScreen';
 
 
@@ -184,9 +183,13 @@ function App() {
   return (
     <div className="App">
       <div className=''>
-        <DropdownMenu
+        {/* <DropdownMenu
           changeWindow={changeWindow}
           items={['Warframes', 'Primaries', 'Secondaries', 'Melees', 'Archwings', 'Archguns', 'Archmelees', 'Companions']}
+        /> */}
+        <Navbar
+            changeWindow={changeWindow}
+            items={['Warframes', 'Primaries', 'Secondaries', 'Melees', 'Archwings', 'Archguns', 'Archmelees', 'Companions']}
         />
       </div>
       <div className='mt-[5%] z-0'>
