@@ -1,48 +1,24 @@
-import React from "react";
-import HomeIcon from '@mui/icons-material/Home'
-import TranslateIcon from '@mui/icons-material/Translate';
-import AutoStoriesIcon from '@mui/icons-material/AutoStories';
-import RecordVoiceOverIcon from '@mui/icons-material/RecordVoiceOver';
+import React, { useState } from "react";
 
-class Navbar extends React.Component {
-    render() {
-        return (
-            <div className="font-bold overflow-hidden w-full bottom-0 absolute m-0 p-0 bg-main-bg-color text-text-color text-center block h-[10%] border-solid border-t-2 border-secondary-color">
-                <div className="gap-4 flex flex-col w-1/4 hover:bg-secondary-color h-full float-left cursor-pointer border-r border-solid border-secondary-color"
-                    onClick={() => {this.props.setWindowState(0)}}
-                >
-                    <div className="absolute m-0 top-1/3 left-[12.5%] translate-y-[-50%] translate-x-[-50%]">
-                        <HomeIcon fontSize="large" className="" />
-                    </div>
-                    <span className="absolute m-0 top-2/3 left-[12.5%] translate-x-[-50%]">Home</span>
-                </div>
-                <div className="gap-4 flex flex-col w-1/4 hover:bg-secondary-color h-full float-left cursor-pointer border-r border-solid border-secondary-color"
-                    onClick={() => {this.props.setWindowState(1)}}
-                >
-                    <div className="absolute m-0 top-1/3 left-[37.5%] translate-y-[-50%] translate-x-[-50%]">
-                        <TranslateIcon fontSize="large" className="" />
-                    </div>
-                    <span className="absolute m-0 top-2/3 left-[37.5%] translate-x-[-50%]">Vocabulary</span>
-                </div>
-                <div className="gap-4 flex flex-col w-1/4 hover:bg-secondary-color h-full float-left cursor-pointer border-r border-solid border-secondary-color"
-                    onClick={() => {this.props.setWindowState(2)}}
-                >
-                    <div className="absolute m-0 top-1/3 left-[62.5%] translate-y-[-50%] translate-x-[-50%]">
-                        <AutoStoriesIcon fontSize="large" className="" />
-                    </div>
-                    <span className="absolute m-0 top-2/3 left-[62.5%] translate-x-[-50%]">Grammar</span>
-                </div>
-                <div className="gap-4 flex flex-col w-1/4 hover:bg-secondary-color h-full float-left cursor-pointer"
-                    onClick={() => {this.props.setWindowState(3)}}
-                >
-                    <div className="absolute m-0 top-1/3 left-[87.5%] translate-y-[-50%] translate-x-[-50%]">
-                        <RecordVoiceOverIcon fontSize="large" className="" />
-                    </div>
-                    <span className="absolute m-0 top-2/3 left-[87.5%] translate-x-[-50%]">Speaking</span>
-                </div>
+function Navbar(props) {
+
+    const [currItem, setCurrItem] = useState(props.items[0])
+
+    const items = props.items.map((item) => (
+        <div key={item} style={{width: `1/${props.items.length}`}} className="left-[2%] text-4xl text-highlight-color cursor-pointer" onClick={() => {props.changeWindow(item); setCurrItem(item);}}>
+            <div className='h-full w-full text-center'>
+                {item}
             </div>
-        )
-    }
+        </div>
+    ));
+
+    return (
+        <div className="font-bold overflow-hidden w-full top-0 absolute m-0 p-0 bg-main-bg-color text-text-color align-center flex justify-center block h-[10%] border-solid border-b-2 border-secondary-color">
+            <div className="flex gap-[2%] translate-x-[-50%] ml-[50%] justify-center align-center h-full">
+                {items}
+            </div>
+        </div>
+    )
 }
 
 export default Navbar;
