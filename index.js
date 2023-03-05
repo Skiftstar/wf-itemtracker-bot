@@ -63,7 +63,7 @@ client.on('message', message => {
         options.forEach(option => {
 
             option.arr.forEach(item => {
-                if (item.name.includes('---CRAFTED---')) {
+                if (item.name.includes(config.craftedFlair)) {
                     return;
                 }
                 items.push(item)
@@ -90,7 +90,7 @@ client.on('message', message => {
             let items = []
 
             array.forEach(item => {
-                if (item.name.includes('---CRAFTED---')) {
+                if (item.name.includes(config.craftedFlair)) {
                     return;
                 }
                 items.push(item)
