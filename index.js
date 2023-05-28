@@ -20,6 +20,10 @@ client.on('message', message => {
 
     if (message.author.id == client.user.id) return
 
+    if (cmd == '<test') {
+        return message.reply("lul!")
+    }
+    
     if (cmd == '<done') {
         if (args.length == 0) {
             return message.reply("Provide an Item Name!");
