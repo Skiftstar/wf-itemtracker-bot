@@ -5,44 +5,71 @@ import { pushChanges } from "../GitHandler/GitHandler"
 const craftedItems: SavedItems = JSON.parse(readFileSync('./data/crafted.json', 'utf8'))
 const completedItems: SavedItems = JSON.parse(readFileSync('./data/completed.json', 'utf8'))
 
-const itemCategoryMap = new Map<string, Categories>()
+export const categoryToTypeMapper: { [key:string]: string } = {
+    "Primary": "primaries",
+    "Secondary": "secondaries",
+    "Melee": "melees",
+    "Warframes": "warframes",
+    "Archwing": "archwings",
+    "Arch-Gun": "archguns",
+    "Arch-Melee": "archmelees",
+    "Pets": "companions",
+    "Sentinels": "companions"
+}
 
-enum StatusType {
+export enum StatusType {
     'crafted',
     'finished'
 }
 
-export const getStatus = (itemName: string, status: StatusType) => {
+export const getStatus = (itemName: string, category: string, status: StatusType) => {
     itemName = itemName.toLowerCase()
 
+    category = categoryToTypeMapper[category]
+
     let itemContainer;
+
     if (status === StatusType.crafted) itemContainer = craftedItems
     else itemContainer = completedItems
 
-    const category = itemCategoryMap.get(itemName)
     return itemContainer[category!].includes(itemName)
 }
 
-export const addItem = (itemName: string, status: StatusType) => {
-    itemName = itemName.toLowerCase()
-
-    let itemContainer;
-    if (status === StatusType.crafted) itemContainer = craftedItems
-    else itemContainer = completedItems
-
-    const category = itemCategoryMap.get(itemName)
-    itemContainer[category!].push(itemName)
-    writeFile(status)
+export const doneOrCrafted = (itemName: string, category: string) => {
+    return getStatus(itemName, category, StatusType.crafted) || getStatus(itemName, category, StatusType.finished)
 }
 
-export const removeItem = (itemName: string, status: StatusType) => {
+export const addItem = (itemName: string, category: string, status: StatusType): boolean => {
     itemName = itemName.toLowerCase()
+    const mappedCategory = categoryToTypeMapper[category]
+
+    let itemContainer;
+    if (status === StatusType.crafted) {
+        if (doneOrCrafted(itemName, category)) {
+            return false
+        }
+        itemContainer = craftedItems
+    } else {
+        if (getStatus(itemName, category, StatusType.finished)) {
+            return false
+        }
+        itemContainer = completedItems
+    }
+
+    itemContainer[mappedCategory!].push(itemName)
+    writeFile(status)
+
+    return true;
+}
+
+export const removeItem = (itemName: string, category: string, status: StatusType) => {
+    itemName = itemName.toLowerCase()
+    category = categoryToTypeMapper[category]
 
     let itemContainer;
     if (status === StatusType.crafted) itemContainer = craftedItems
     else itemContainer = completedItems
     
-    const category = itemCategoryMap.get(itemName)
     itemContainer[category!] = itemContainer[category!].filter(item => item.toLowerCase() !== itemName)
     writeFile(status)
 }
@@ -52,11 +79,11 @@ const writeFile = (status: StatusType) => {
     let fileName;
     if (status === StatusType.crafted) {
         itemContainer = craftedItems
-        fileName = './crafted.json'
+        fileName = './data/crafted.json'
     }
     else {
         itemContainer = completedItems
-        fileName = './completed.json'
+        fileName = './data/completed.json'
     }
 
     writeFileSync(fileName, JSON.stringify(itemContainer).replaceAll(",", ",\n"))

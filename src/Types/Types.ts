@@ -1,13 +1,12 @@
 export interface ResponseItem {
     category: string,
     uniqueName: string,
-    components: ResponseItem[]
+    components: ResponseItem[],
+    name: string
 }
 
 export interface Item {
-    data: ResponseItem,
-    crafted: boolean,
-    finished: boolean
+    data: ResponseItem
 }
 
 export interface ItemArrays {

@@ -20,6 +20,10 @@ export const sendReply = (message: Message, reply: string) => {
     message.reply(reply)
 }
 
+export const bulkDelete = (channel: TextChannel) => {
+    channel.bulkDelete(20);
+}
+
 export const sendError = (error: string, additionalData?: any) => {
     if (client.isReady()) {
         const errChannel = getConfigValue("errorChannel")
@@ -36,7 +40,7 @@ export const sendEmbed = (channel: TextChannel, embed: MessageEmbed) => {
     })
 }
 
-const getChannelById = (channelId: string) => {
+export const getChannelById = (channelId: string) => {
     const guildId = getConfigValue("guildId")
 
     return client.guilds.cache.get(guildId)?.channels.cache.get(channelId) as TextChannel

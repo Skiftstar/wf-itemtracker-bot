@@ -1,35 +1,39 @@
 import { readdirSync } from "fs";
-import { loadInitialData } from "./DataBuilder/DataBuilder";
+import { buildEmbeds, loadInitialData } from "./DataBuilder/DataBuilder";
 import { sendError, startBot } from "./DiscordBot/Bot";
 import path from "path";
 import { runCommand } from "./SystemCommandRunner/SystemCommandRunner";
 import { Client, Collection, Intents, Message } from "discord.js";
 import { getConfigValue } from "./Config/Config";
+import { ItemArrays, ResponseItem } from "./Types/Types";
 
 export const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES] });
 
 const commandFolder = path.join(__dirname, "Commands")
 const commandFiles = readdirSync(commandFolder);
-const commands = new Collection();
+const commands = new Map<string, any>();
 
+let itemArrays: ItemArrays;
+let componentsMap = new Map<string, ResponseItem[]>()
+export let nameToItemMap = new Map<string, ResponseItem>()
 
 for (const file of commandFiles) {
-	const command = require(`./commands/${file}`);
+	const command = require(`./Commands/${file}`);
 	commands.set(command.name, command);
-}
-
-for (const file of commandFiles) {
-    console.log(file)
-    console.log(commandFolder)
-    const command = runCommand('node', [path.join(commandFolder, file)])
 }
 
 startBot()
 
-
-
 client.on('ready', () => {
     console.log("Bot started!")
+    loadInitialData().then(data => {
+        itemArrays = data.arrays
+        componentsMap = data.componentsMap
+        nameToItemMap = data.nameToItemMap
+
+        console.log("Fetched Data")
+        buildEmbeds(itemArrays)
+    })
 })
 
 client.on('message', (message) => {
@@ -40,9 +44,13 @@ client.on('message', (message) => {
     const command = args[0].split(cmdPrefix)[1]
     args.shift()
 
-    // execCommand(command, args, message)
+    commands.get(command)!.execute(args, message);
 })
 
 client.on('error', (error) => {
     sendError(error.name, error.message)
 })
+
+export const reloadEmbeds = () => {
+    buildEmbeds(itemArrays)
+}

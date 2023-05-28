@@ -14,7 +14,7 @@ async function pullChangesCommitAndPush(commitName: string, callback?: Function)
   
       // Commit the changes
       await runCommand('git', ['add', '.']);
-      await runCommand('git', ['commit', '-m', commitName]);
+      await runCommand('git', ['commit', '-m', `"${commitName}"`]);
   
       // Push the changes to the Git repository
       await runCommand('git', ['push']);

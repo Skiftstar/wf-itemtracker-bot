@@ -19,10 +19,6 @@ client.on('message', message => {
     const args = message.content.split(' ').slice(1)
 
     if (message.author.id == client.user.id) return
-
-    if (cmd == '<test') {
-        return message.reply("lul!")
-    }
     
     if (cmd == '<done') {
         if (args.length == 0) {
