@@ -1,7 +1,6 @@
 const Discord = require('discord.js');
 const fs = require('fs');
 const axios = require('axios');
-const { exec } = require('child_process');
 
 const primaries = [], secondaries = [], melees = [], warframes = [], archwings = [], archguns = [], archmelees = [], companions = []
 const options = [{ arr: primaries, name: "primaries" }, { arr: secondaries, name: "secondaries" }, { arr: melees, name: "melees" }, { arr: warframes, name: "warframes" }, { arr: archwings, name: "archwings" }, { arr: archguns, name: "archguns" }, { arr: archmelees, name: "archmelees" }, { arr: companions, name: "companions" }]
@@ -48,7 +47,9 @@ client.on('message', message => {
             return message.reply("Provide an Item Name!");
         }
         let itemName = args.join(' ').toLowerCase()
-        craftedItems = craftedItems.filter(item => item.toLowerCase() !== itemName)
+        Object.keys(craftedItems).forEach(itemType => {
+            craftedItems[itemType] = craftedItems[itemType].filter(item => item.toLowerCase() !== itemName)
+        })
         fs.writeFileSync('./crafted.json', JSON.stringify(craftedItems).replaceAll(",", ",\n"))
         reloadEmbeds()
         return message.reply("Updated!")
@@ -338,6 +339,8 @@ function loadStuff() {
     let archmeleesTemp = []
     let companionsTemp = []
 
+    let tempArrays = { primaries: [], secondaries: [], melees: [], warframes: [], archwings: [], archguns: [], archmelees: [], companions: []}
+
     const obj = [{ arr: primariesTemp, categories: ["Primary"] }, { arr: secondariesTemp, categories: ["Secondary"] }, { arr: meleesTemp, categories: ["Melee"] }, { arr: warframesTemp, categories: ["Warframes"] }, { arr: archwingsTemp, categories: ["Archwing"] }, { arr: archgunsTemp, categories: ["Arch-Gun"] }, { arr: archmeleesTemp, categories: ["Arch-Melee"] }, { arr: companionsTemp, categories: ["Pets", "Sentinels"] }]
     const toSkip = ['Glyphs', 'Sigils', 'Enemy', 'Quests', 'Mods', 'Fish', 'Skins', 'Node', 'Relics']
 
@@ -378,6 +381,19 @@ function loadStuff() {
             loadStuff();
         });
     function filterAndPrint() {
+        Object.keys(tempArrays).forEach(itemType => {
+            tempArrays[itemType].forEach(item => {
+                if (completedItems[itemType].includes(item.name)) {
+                    return;
+                }
+                const itemCopy = JSON.parse(JSON.stringify(item))
+                if (craftedItems[itemType].includes(item.name)) {
+                    itemCopy.name = itemCopy.name + config.craftedFlair
+                }
+                primaries.push(itemCopy)
+            })
+        })
+
         primariesTemp.forEach(item => {
             if (completedItems.primaries.includes(item.name)) {
                 return;
@@ -554,42 +570,4 @@ function generateEmbed(items) {
         }
     }
     return embed;
-}
-
-async function pullChangesCommitAndPush(commitName, callback) {
-  try {
-    // Pull changes from the Git repository
-    await runCommand('git', ['pull']);
-
-    // Perform any necessary operations here
-
-    // Commit the changes
-    await runCommand('git', ['add', '.']);
-    await runCommand('git', ['commit', '-m', commitName]);
-
-    // Push the changes to the Git repository
-    await runCommand('git', ['push']);
-
-    // Call the callback function once the push succeeds
-    if (typeof callback === 'function') {
-      callback();
-    }
-  } catch (error) {
-    console.error('An error occurred:', error);
-  }
-}
-
-function runCommand(command, args) {
-  return new Promise((resolve, reject) => {
-    const childProcess = exec(`${command} ${args.join(' ')}`, (error, stdout, stderr) => {
-      if (error) {
-        reject(error);
-      } else {
-        resolve({ stdout, stderr });
-      }
-    });
-
-    childProcess.stdout.pipe(process.stdout);
-    childProcess.stderr.pipe(process.stderr);
-  });
 }
