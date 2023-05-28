@@ -1,6 +1,7 @@
 const Discord = require('discord.js');
 const fs = require('fs');
 const axios = require('axios');
+const { exec } = require('child_process');
 
 const primaries = [], secondaries = [], melees = [], warframes = [], archwings = [], archguns = [], archmelees = [], companions = []
 const options = [{ arr: primaries, name: "primaries" }, { arr: secondaries, name: "secondaries" }, { arr: melees, name: "melees" }, { arr: warframes, name: "warframes" }, { arr: archwings, name: "archwings" }, { arr: archguns, name: "archguns" }, { arr: archmelees, name: "archmelees" }, { arr: companions, name: "companions" }]
@@ -40,6 +41,23 @@ client.on('message', message => {
         let itemName = args.join(' ')
         if (addCraft(itemName)) return message.reply("Successfully crafted: " + itemName)
         return message.reply("Item already crafted or doesn't exist!")
+    }
+
+    if (cmd === "<uncraft") {
+        if (args.length == 0) {
+            return message.reply("Provide an Item Name!");
+        }
+        let itemName = args.join(' ').toLowerCase()
+        craftedItems = craftedItems.filter(item => item.toLowerCase() !== itemName)
+        fs.writeFileSync('./crafted.json', JSON.stringify(craftedItems).replaceAll(",", ",\n"))
+        reloadEmbeds()
+        return message.reply("Updated!")
+    }
+
+    if (cmd === "<undone") {
+        if (args.length == 0) {
+            return message.reply("Provide an Item Name!");
+        }
     }
 
     if (cmd == "<iteminfo") {
@@ -230,22 +248,24 @@ function removeWeapon(itemName) {
         let option = options[j]
         for (let i = 0; i < option.arr.length; i++) {
             let item = option.arr[i]
+
+            let itemName = ''
             if (item.name.toLowerCase() == itemName) {
-                completedItems[option.name].push(item.name)
-                removeItemOnce(option.arr, item)
-                fs.writeFileSync('./completed.json', JSON.stringify(completedItems).replaceAll(",", ",\n"))
-                reloadEmbeds()
-                return true;
+                itemName = item.name
             } else if (item.name.toLowerCase().includes(config.craftedFlair.toLowerCase()) && item.name.split(config.craftedFlair)[0].toLowerCase() == itemName.toLowerCase()) {
                 itemCopy = JSON.parse(JSON.stringify(item));
-                itemCopy.name = itemCopy.name.split(config.craftedFlair)[0];
-                completedItems[option.name].push(itemCopy.name)
-                removeItemOnce(option.arr, item)
-                fs.writeFileSync('./completed.json', JSON.stringify(completedItems).replaceAll(",", ",\n"))
-                reloadEmbeds()
-                return true;
-                break;
+                itemName = itemCopy.name.split(config.craftedFlair)[0];
             }
+            completedItems[option.name].push(item.name)
+            removeItemOnce(option.arr, item)
+
+            fs.writeFileSync('./completed.json', JSON.stringify(completedItems).replaceAll(",", ",\n"))
+            pullChangesCommitAndPush('Commit message', () => {
+                reloadEmbeds()
+            }).catch((error) => {
+                console.error('An unhandled error occurred:', error);
+            });
+            return true;
         }
     }
     if (itemFound) {
@@ -262,10 +282,16 @@ function addCraft(itemName) {
             let item = option.arr[i]
             if (item.name.toLowerCase() == itemName) {
                 craftedItems[option.name].push(item.name)
+
                 item.name = item.name + config.craftedFlair
                 option.arr.push(item)
+                
                 fs.writeFileSync('./crafted.json', JSON.stringify(craftedItems).replaceAll(",", ",\n"))
-                reloadEmbeds()
+                pullChangesCommitAndPush('Commit message', () => {
+                    reloadEmbeds()
+                }).catch((error) => {
+                    console.error('An unhandled error occurred:', error);
+                });
                 return true
             }
         }
@@ -528,4 +554,42 @@ function generateEmbed(items) {
         }
     }
     return embed;
+}
+
+async function pullChangesCommitAndPush(commitName, callback) {
+  try {
+    // Pull changes from the Git repository
+    await runCommand('git', ['pull']);
+
+    // Perform any necessary operations here
+
+    // Commit the changes
+    await runCommand('git', ['add', '.']);
+    await runCommand('git', ['commit', '-m', commitName]);
+
+    // Push the changes to the Git repository
+    await runCommand('git', ['push']);
+
+    // Call the callback function once the push succeeds
+    if (typeof callback === 'function') {
+      callback();
+    }
+  } catch (error) {
+    console.error('An error occurred:', error);
+  }
+}
+
+function runCommand(command, args) {
+  return new Promise((resolve, reject) => {
+    const childProcess = exec(`${command} ${args.join(' ')}`, (error, stdout, stderr) => {
+      if (error) {
+        reject(error);
+      } else {
+        resolve({ stdout, stderr });
+      }
+    });
+
+    childProcess.stdout.pipe(process.stdout);
+    childProcess.stderr.pipe(process.stderr);
+  });
 }
