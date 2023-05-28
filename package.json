@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "run": "node index.js && cd my-app && npm start"
+    "run": "npx tsc && node build/index.js"
   },
   "author": "",
   "license": "ISC",
