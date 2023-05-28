@@ -1,6 +1,6 @@
 import { readdirSync } from "fs";
 import { buildEmbeds, loadInitialData } from "./DataBuilder/DataBuilder";
-import { sendError, startBot } from "./DiscordBot/Bot";
+import { sendError, sendReply, startBot } from "./DiscordBot/Bot";
 import path from "path";
 import { Client, Intents } from "discord.js";
 import { getConfigValue } from "./Config/Config";
@@ -12,13 +12,13 @@ const commandFolder = path.join(__dirname, "Commands")
 const commandFiles = readdirSync(commandFolder);
 const commands = new Map<string, any>();
 
-let itemArrays: ItemArrays;
+export let itemArrays: ItemArrays;
 let componentsMap = new Map<string, ResponseItem[]>()
 export let nameToItemMap = new Map<string, ResponseItem>()
 
 for (const file of commandFiles) {
 	const command = require(`./Commands/${file}`);
-	commands.set(command.name, command);
+	commands.set(command.name.toLowerCase(), command);
 }
 
 startBot()
@@ -40,10 +40,14 @@ client.on('message', (message) => {
     if (!message.content.startsWith(cmdPrefix)) return
 
     const args = message.content.split(" ")
-    const command = args[0].split(cmdPrefix)[1]
+    const command = args[0].split(cmdPrefix)[1].toLowerCase()
     args.shift()
 
-    commands.get(command)!.execute(args, message);
+    const commandModule = commands.get(command)
+    if (!commandModule) {
+        return sendReply(message, "Command doesn't exist!")
+    }
+    commandModule.execute(args, message);
 })
 
 client.on('error', (error) => {

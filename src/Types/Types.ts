@@ -1,8 +1,18 @@
 export interface ResponseItem {
     category: string,
     uniqueName: string,
-    components: ResponseItem[],
-    name: string
+    components?: ResponseItem[],
+    name: string,
+    wikiaThumbnail: string,
+    drops?: DropItem[],
+    bpCost?: number,
+    itemCount: number
+}
+
+export interface DropItem {
+    location: string,
+    rarity: string,
+    chance: number
 }
 
 export interface Item {
