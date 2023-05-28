@@ -5,9 +5,11 @@ async function pullChangesAndStart() {
   try {
     // Pull changes from the Git repository
     await runCommand('git', ['pull']);
+    // Compile TS Code
+    await runCommand('npx', ['tsc']);
 
     // Start the index.js file in another Node process
-    const childProcess = spawn('node', ['index.js']);
+    const childProcess = spawn('node', ['build/index.js']);
 
     childProcess.stdout.on('data', (data) => {
       console.log(`stdout: ${data}`);
