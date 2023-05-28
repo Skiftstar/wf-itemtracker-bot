@@ -2,8 +2,7 @@ import { readdirSync } from "fs";
 import { buildEmbeds, loadInitialData } from "./DataBuilder/DataBuilder";
 import { sendError, startBot } from "./DiscordBot/Bot";
 import path from "path";
-import { runCommand } from "./SystemCommandRunner/SystemCommandRunner";
-import { Client, Collection, Intents, Message } from "discord.js";
+import { Client, Intents } from "discord.js";
 import { getConfigValue } from "./Config/Config";
 import { ItemArrays, ResponseItem } from "./Types/Types";
 

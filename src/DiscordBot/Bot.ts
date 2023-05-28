@@ -2,16 +2,9 @@ import { Message, MessageEmbed, TextChannel } from "discord.js";
 import { getConfigValue } from "../Config/Config";
 import { client } from "..";
 
-let readyCallback: Function = () => {}
-
 export const startBot = () => {
     client.login(getConfigValue("token"))
 }
-
-export const setReadyCallback = (callback: Function) => {
-    readyCallback = callback
-}
-
 export const sendMessage = (channel: TextChannel, message: string) => {
     channel.send(message)
 }
