@@ -4,6 +4,7 @@ import { bulkDelete, getChannelById, sendEmbed, sendError } from "../DiscordBot/
 import { Item, ItemArrays, ResponseItem } from "../Types/Types"
 import { getConfigValue } from "../Config/Config"
 import { StatusType, getStatus } from "../ItemHandler/ItemHandler"
+import { firstLetterUpper } from "../Util/Util"
 
 export interface DataResponse {
     arrays: ItemArrays
@@ -134,8 +135,4 @@ function generateEmbed(items: Item[]) {
     }
 
     return embed;
-}
-
-const firstLetterUpper = (input: string) => {
-    return input.charAt(0).toUpperCase() + input.slice(1)
 }
