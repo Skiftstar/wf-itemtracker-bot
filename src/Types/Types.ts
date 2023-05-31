@@ -37,3 +37,10 @@ export enum Categories {
     archmelees,
     companions
 }
+
+export enum GamePlatform {
+    pc,
+    ps4,
+    xb1,
+    swi
+}
