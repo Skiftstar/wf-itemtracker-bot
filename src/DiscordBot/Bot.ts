@@ -1,6 +1,6 @@
 import { Message, EmbedBuilder, TextChannel, Interaction, ChatInputCommandInteraction, ChannelType } from "discord.js";
 import { getClientValue, getConfigValue, setConfigValue } from "../Config/Config";
-import { client } from "..";
+import { client, setup } from "..";
 import { ChannelIdRecord } from "../Types/Types";
 
 export const startBot = () => {
@@ -77,6 +77,8 @@ export const createChannels = (guildId: string, categoryName: string) => {
 
         setConfigValue("weaponChannels", channels)
         setConfigValue("guildId", guildId)
+
+        setup()
     })
 
 }

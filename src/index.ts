@@ -62,14 +62,7 @@ client.on('ready', () => {
         return;
     }
 
-    loadInitialData().then(data => {
-        itemArrays = data.arrays
-        componentsMap = data.componentsMap
-        nameToItemMap = data.nameToItemMap
-
-        console.log("Fetched Data")
-        buildEmbeds(itemArrays)
-    })
+    setup()
 })
 
 client.on('interactionCreate', async interaction => {
@@ -97,6 +90,17 @@ client.on('interactionCreate', async interaction => {
 client.on('error', (error) => {
     sendError(error.name, error.message)
 })
+
+export const setup = () => {
+    loadInitialData().then(data => {
+        itemArrays = data.arrays
+        componentsMap = data.componentsMap
+        nameToItemMap = data.nameToItemMap
+
+        console.log("Fetched Data")
+        buildEmbeds(itemArrays)
+    })
+}
 
 export const reloadEmbeds = () => {
     buildEmbeds(itemArrays)
