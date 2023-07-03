@@ -65,21 +65,6 @@ client.on('ready', () => {
     })
 })
 
-// client.on('message', (message) => {
-//     const cmdPrefix = getConfigValue("prefix")
-//     if (!message.content.startsWith(cmdPrefix)) return
-
-//     const args = message.content.split(" ")
-//     const command = args[0].split(cmdPrefix)[1].toLowerCase()
-//     args.shift()
-
-//     const commandModule = commands.get(command)
-//     if (!commandModule) {
-//         return sendReply(message, "Command doesn't exist!")
-//     }
-//     commandModule.execute(args, message);
-// })
-
 client.on('interactionCreate', async interaction => {
     if (!interaction.isChatInputCommand()) return;
 
