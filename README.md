@@ -11,7 +11,7 @@ If items are missing when they are freshly released, the Warframe-Status API mig
 
 ## Requirements
 
-1. [Node.JS 18 LTS or later](https://nodejs.org/en)
+- [Node.JS 18 LTS or later](https://nodejs.org/en)
 
 ## Getting Started
 
