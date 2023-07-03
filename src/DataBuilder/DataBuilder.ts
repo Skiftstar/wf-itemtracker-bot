@@ -61,7 +61,8 @@ export const loadInitialData = async (): Promise<DataResponse> => {
 
 export const buildEmbeds = (items: ItemArrays) => {
     let deplayMultiplier = 1;
-    let initialDelay = 100
+    const initialDelay = 100;
+    const delayBetweenEmbeds = getConfigValue("delayBetweenEmbeds")
     for (const type in items) {
         const embed = generateEmbed(items[type])
         const channelId = getConfigValue(`weaponChannels.${type}`)
@@ -69,7 +70,7 @@ export const buildEmbeds = (items: ItemArrays) => {
         bulkDelete(channel)
         setTimeout(() => {
             sendEmbed(channel, embed)
-        }, initialDelay + 100 * deplayMultiplier)
+        }, initialDelay + delayBetweenEmbeds * deplayMultiplier)
         deplayMultiplier++
     }
 }

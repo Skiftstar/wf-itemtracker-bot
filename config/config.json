@@ -2,7 +2,7 @@
     "token": "NzM2OTA2NTM5MzE0NTc3NDI4.Xx1nsg.5ERLzVtBlEDr1aSo-YDJZ4mjuRU",
     "git-backup": false,
     "clientId": "736906539314577428",
-    "prefix": "<",
+    "delayBetweenEmbeds": 100,
     "maxItemsInField": 55,
     "maxCharacterCountInEmbedTotal": 6000,
     "maxCharacterCountInEmbedField": 1024,
