@@ -13,7 +13,7 @@ module.exports = {
 				.setDescription("the item you want to set as crafted")
 				.setRequired(true)),
 	async execute(interaction: ChatInputCommandInteraction) {
-		let itemName = interaction.options.getString("item", true)
+		let itemName = interaction.options.getString("item", true).toLowerCase()
 		
 		const item = nameToItemMap.get(itemName)
 
