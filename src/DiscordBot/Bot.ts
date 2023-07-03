@@ -1,9 +1,9 @@
 import { Message, EmbedBuilder, TextChannel, Interaction, ChatInputCommandInteraction } from "discord.js";
-import { getConfigValue } from "../Config/Config";
+import { getClientValue, getConfigValue } from "../Config/Config";
 import { client } from "..";
 
 export const startBot = () => {
-    client.login(getConfigValue("token"))
+    client.login(getClientValue("token"))
 }
 export const sendMessage = (channel: TextChannel, message: string) => {
     channel.send(message)

@@ -3,7 +3,7 @@ import { buildEmbeds, loadInitialData } from "./DataBuilder/DataBuilder";
 import { sendError, sendReply, startBot } from "./DiscordBot/Bot";
 import path from "path";
 import { Client, Collection, GatewayIntentBits } from "discord.js";
-import { getConfigValue } from "./Config/Config";
+import { getClientValue, getConfigValue } from "./Config/Config";
 import { ItemArrays, ResponseItem } from "./Types/Types";
 import { BotClient } from "./DiscordBot/BotClient";
 import { REST, Routes } from 'discord.js';
@@ -15,8 +15,8 @@ const commandFiles = readdirSync(commandFolder);
 client.commands = new Collection()
 const commands = [];
 
-const token = getConfigValue('token')
-const clientId = getConfigValue('clientId')
+const token = getClientValue('token')
+const clientId = getClientValue('clientId')
 
 export let itemArrays: ItemArrays;
 let componentsMap = new Map<string, ResponseItem[]>()
