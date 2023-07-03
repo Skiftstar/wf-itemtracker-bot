@@ -5,16 +5,16 @@
 "maxCharacterCountInEmbedTotal":6000,
 "maxCharacterCountInEmbedField":1024,
 "craftedFlair":" ---CRAFTED---",
-"guildId":"",
-"weaponChannels": {
-    "primaries":"",
-    "secondaries":"",
-    "melees":"",
-    "warframes":"",
-    "archwings":"",
-    "archguns":"",
-    "archmelees":"",
-    "companions":""
+"guildId":"736902592633897020",
+"weaponChannels":{
+"primaries":"1125511516997824555",
+"secondaries":"1125511518415491082",
+"melees":"1125511519380176958",
+"warframes":"1125511520290353224",
+"archwings":"1125511521527664720",
+"archguns":"1125511522622390383",
+"archmelees":"1125511523704520815",
+"companions":"1125511524807614595"
 },
-"errorChannel":""
+"errorChannel":"1125511525973643275"
 }
