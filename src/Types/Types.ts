@@ -27,6 +27,10 @@ export interface SavedItems {
     [category: string]: string[]
 }
 
+export interface ChannelIdRecord {
+    [channelName: string]: string
+}
+
 export enum Categories {
     primaries,
     secondaries,

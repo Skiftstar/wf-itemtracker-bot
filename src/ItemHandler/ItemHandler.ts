@@ -1,6 +1,7 @@
 import { readFileSync, writeFileSync } from "fs"
-import { Categories, SavedItems } from "../Types/Types"
+import { SavedItems } from "../Types/Types"
 import { pushChanges } from "../GitHandler/GitHandler"
+import { beautifyJSON } from "../Util/Util"
 
 const craftedItems: SavedItems = JSON.parse(readFileSync('./data/crafted.json', 'utf8'))
 const completedItems: SavedItems = JSON.parse(readFileSync('./data/completed.json', 'utf8'))
@@ -86,6 +87,6 @@ const writeFile = (status: StatusType) => {
         fileName = './data/completed.json'
     }
 
-    writeFileSync(fileName, JSON.stringify(itemContainer).replaceAll(",", ",\n"))
+    writeFileSync(fileName, beautifyJSON(JSON.stringify(itemContainer)))
     pushChanges(`Changed File ${fileName}`)
 }

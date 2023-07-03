@@ -55,6 +55,13 @@ startBot()
 
 client.on('ready', () => {
     console.log("Bot started!")
+
+    const guildId: string = getConfigValue("guildId")
+    if (guildId.length === 0) {
+        console.log("No channels setup, waiting for init command!")
+        return;
+    }
+
     loadInitialData().then(data => {
         itemArrays = data.arrays
         componentsMap = data.componentsMap
