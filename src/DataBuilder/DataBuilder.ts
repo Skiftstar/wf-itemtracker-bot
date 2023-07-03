@@ -60,12 +60,17 @@ export const loadInitialData = async (): Promise<DataResponse> => {
   }
 
 export const buildEmbeds = (items: ItemArrays) => {
+    let deplayMultiplier = 1;
+    let initialDelay = 100
     for (const type in items) {
         const embed = generateEmbed(items[type])
         const channelId = getConfigValue(`weaponChannels.${type}`)
         const channel = getChannelById(channelId)
         bulkDelete(channel)
-        sendEmbed(channel, embed)
+        setTimeout(() => {
+            sendEmbed(channel, embed)
+        }, initialDelay + 100 * deplayMultiplier)
+        deplayMultiplier++
     }
 }
 
@@ -109,6 +114,7 @@ function generateEmbed(items: Item[]) {
     })
 
     let embed = new EmbedBuilder()
+        .setTitle("Items")
         .setColor('#FF0000')
         .setDescription('These items still need to be leveled up to max.\n\n')
 
