@@ -5,6 +5,10 @@ The bot is designed to for one person on a seperate guild. There isn't support f
 
 It collects all the data from the API provided by [warframe-status](https://github.com/wfcd/warframe-status)
 
+## Disclaimer
+
+If items are missing when they are freshly released, it is not the fault of my application, but because the Warframe-Status API has not included them yet!
+
 ## Requirements
 
 1. [Node.JS 18 LTS or later](https://nodejs.org/en)(https://docs.warframestat.us/)
@@ -35,6 +39,8 @@ Items can be set as 'done' with `/done` and added back with `/undone`. Setting t
 Information about a single item can be seen with the `/iteminfo` command
 
 `/ingredients` returns a list of missing ingredients (might not be totally accurate, if items with complex (multiple sub crafts) crafting recipes are included)
+
+the `/refresh` command refetches all data and then reloads all the embeds
 
 and with `/wiki` you can quickly let the bot look for a specific wiki entry (keep in mind that the wiki title must be exactly the query inputted)
 
