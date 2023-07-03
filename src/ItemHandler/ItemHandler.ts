@@ -33,6 +33,11 @@ export const getStatus = (itemName: string, category: string, status: StatusType
     if (status === StatusType.crafted) itemContainer = craftedItems
     else itemContainer = completedItems
 
+    if (!(category in itemContainer)) {
+        itemContainer[category] = []
+        return false
+    }
+
     return itemContainer[category!].includes(itemName)
 }
 
