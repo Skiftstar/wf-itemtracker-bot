@@ -1,28 +1,30 @@
-import { Message } from "discord.js";
+import { ChatInputCommandInteraction, Message, SlashCommandBuilder } from "discord.js";
 import { sendReply } from "../DiscordBot/Bot";
 import { StatusType, addItem } from "../ItemHandler/ItemHandler";
 import { nameToItemMap, reloadEmbeds } from "..";
 
 module.exports = {
-	name: 'done',
-	execute(args: string[], message: Message) {
-        if (args.length === 0) {
-			return sendReply(message, "Provide an Item Name!")
-		}
-
-		let itemName = args.join(' ').toLowerCase()
+	data: new SlashCommandBuilder()
+		.setName('done')
+		.setDescription("Set an item as 'done'")
+		.addStringOption(option =>
+			option.setName("item")
+				.setDescription("the item you want to set as done")
+				.setRequired(true)),
+	async execute(interaction: ChatInputCommandInteraction) {
+		let itemName = interaction.options.getString("item", true)
 		
 		const item = nameToItemMap.get(itemName)
 
 		if (!item) {
-			return sendReply(message, "Item doesn't exist!")
+			return sendReply(interaction, "Item doesn't exist!")
 		}
 
 		if (addItem(itemName, item.category, StatusType.finished)) {
 			reloadEmbeds()
-			return sendReply(message, `Successfully finished: ${item.name}`)
+			return sendReply(interaction, `Successfully finished: ${item.name}`)
 		}
 
-		return sendReply(message, "Item already completed!")
+		return sendReply(interaction, "Item already completed!")
 	},
 };

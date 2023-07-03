@@ -2,15 +2,21 @@ import { readdirSync } from "fs";
 import { buildEmbeds, loadInitialData } from "./DataBuilder/DataBuilder";
 import { sendError, sendReply, startBot } from "./DiscordBot/Bot";
 import path from "path";
-import { Client, Intents } from "discord.js";
+import { Client, Collection, GatewayIntentBits } from "discord.js";
 import { getConfigValue } from "./Config/Config";
 import { ItemArrays, ResponseItem } from "./Types/Types";
+import { BotClient } from "./DiscordBot/BotClient";
+import { REST, Routes } from 'discord.js';
 
-export const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES] });
+export const client = new BotClient({ intents: [GatewayIntentBits.Guilds] });
 
 const commandFolder = path.join(__dirname, "Commands")
 const commandFiles = readdirSync(commandFolder);
-const commands = new Map<string, any>();
+client.commands = new Collection()
+const commands = [];
+
+const token = getConfigValue('token')
+const clientId = getConfigValue('clientId')
 
 export let itemArrays: ItemArrays;
 let componentsMap = new Map<string, ResponseItem[]>()
@@ -18,8 +24,32 @@ export let nameToItemMap = new Map<string, ResponseItem>()
 
 for (const file of commandFiles) {
 	const command = require(`./Commands/${file}`);
-	commands.set(command.name.toLowerCase(), command);
+    if ('data' in command && 'execute' in command) {
+        client.commands.set(command.data.name, command);
+        commands.push(command.data.toJSON());
+    }
 }
+
+// Construct and prepare an instance of the REST module
+const rest = new REST().setToken(token);
+
+// and deploy your commands!
+(async () => {
+	try {
+		console.log(`Started refreshing ${commands.length} application (/) commands.`);
+
+		// The put method is used to fully refresh all commands in the guild with the current set
+		const data = await rest.put(
+			Routes.applicationCommands(clientId),
+			{ body: commands },
+		);
+
+		console.log(`Successfully reloaded ${(data as any).length} application (/) commands.`);
+	} catch (error) {
+		// And of course, make sure you catch and log any errors!
+		console.error(error);
+	}
+})();
 
 startBot()
 
@@ -35,19 +65,41 @@ client.on('ready', () => {
     })
 })
 
-client.on('message', (message) => {
-    const cmdPrefix = getConfigValue("prefix")
-    if (!message.content.startsWith(cmdPrefix)) return
+// client.on('message', (message) => {
+//     const cmdPrefix = getConfigValue("prefix")
+//     if (!message.content.startsWith(cmdPrefix)) return
 
-    const args = message.content.split(" ")
-    const command = args[0].split(cmdPrefix)[1].toLowerCase()
-    args.shift()
+//     const args = message.content.split(" ")
+//     const command = args[0].split(cmdPrefix)[1].toLowerCase()
+//     args.shift()
 
-    const commandModule = commands.get(command)
-    if (!commandModule) {
-        return sendReply(message, "Command doesn't exist!")
-    }
-    commandModule.execute(args, message);
+//     const commandModule = commands.get(command)
+//     if (!commandModule) {
+//         return sendReply(message, "Command doesn't exist!")
+//     }
+//     commandModule.execute(args, message);
+// })
+
+client.on('interactionCreate', async interaction => {
+    if (!interaction.isChatInputCommand()) return;
+
+    const command = (interaction.client as BotClient).commands.get(interaction.commandName);
+
+	if (!command) {
+		console.error(`No command matching ${interaction.commandName} was found.`);
+		return;
+	}
+
+	try {
+		await command.execute(interaction);
+	} catch (error) {
+		console.error(error);
+		if (interaction.replied || interaction.deferred) {
+			await interaction.followUp({ content: 'There was an error while executing this command!', ephemeral: true });
+		} else {
+			await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
+		}
+	}
 })
 
 client.on('error', (error) => {

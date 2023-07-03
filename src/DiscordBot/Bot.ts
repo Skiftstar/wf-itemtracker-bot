@@ -1,4 +1,4 @@
-import { Message, MessageEmbed, TextChannel } from "discord.js";
+import { Message, EmbedBuilder, TextChannel, Interaction, ChatInputCommandInteraction } from "discord.js";
 import { getConfigValue } from "../Config/Config";
 import { client } from "..";
 
@@ -9,8 +9,12 @@ export const sendMessage = (channel: TextChannel, message: string) => {
     channel.send(message)
 }
 
-export const sendReply = (message: Message, reply: string) => {
-    message.reply(reply)
+export const sendReply = (interaction: ChatInputCommandInteraction, reply: string) => {
+    interaction.reply(reply)
+}
+
+export const replyEmbed = (interaction: ChatInputCommandInteraction, embed: EmbedBuilder) => {
+    interaction.reply({embeds: [embed]})
 }
 
 export const bulkDelete = (channel: TextChannel) => {
@@ -27,7 +31,7 @@ export const sendError = (error: string, additionalData?: any) => {
     console.log(additionalData)
 }
 
-export const sendEmbed = (channel: TextChannel, embed: MessageEmbed) => {
+export const sendEmbed = (channel: TextChannel, embed: EmbedBuilder) => {
     channel.send({ embeds: [embed] }).catch(err => {
         sendError("Error while sending embed, see logs", err)
     })

@@ -1,4 +1,4 @@
-import { MessageEmbed } from "discord.js"
+import { EmbedBuilder } from "discord.js"
 import { fetchData } from "../Axios/Axios"
 import { bulkDelete, getChannelById, sendEmbed, sendError } from "../DiscordBot/Bot"
 import { Item, ItemArrays, ResponseItem } from "../Types/Types"
@@ -108,7 +108,7 @@ function generateEmbed(items: Item[]) {
         }
     })
 
-    let embed = new MessageEmbed()
+    let embed = new EmbedBuilder()
         .setColor('#FF0000')
         .setDescription('These items still need to be leveled up to max.\n\n')
 
@@ -124,14 +124,14 @@ function generateEmbed(items: Item[]) {
             let fieldName = fieldNameTempl;
             if (fieldAmount > 0) fieldName += " " + ++fieldAmount
 
-            embed.addField(fieldName, arrays[variant].slice(0, maxItemsInField).join("\n"))
+            embed.addFields({name: fieldName, value: arrays[variant].slice(0, maxItemsInField).join("\n")})
             
             arrays[variant] = arrays[variant].slice(maxItemsInField)
         }
         let fieldName = fieldNameTempl
         if (fieldAmount > 0) fieldName += " " + fieldAmount
 
-        embed.addField(fieldName, arrays[variant].join("\n"))
+        embed.addFields({name: fieldName, value: arrays[variant].join("\n")})
     }
 
     return embed;

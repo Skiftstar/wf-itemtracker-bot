@@ -1,25 +1,27 @@
-import { Message } from "discord.js";
+import { ChatInputCommandInteraction, Message, SlashCommandBuilder } from "discord.js";
 import { sendReply } from "../DiscordBot/Bot";
 import { StatusType, removeItem } from "../ItemHandler/ItemHandler";
 import { nameToItemMap, reloadEmbeds } from "..";
 
 module.exports = {
-	name: 'undone',
-	execute(args: string[], message: Message) {
-        if (args.length === 0) {
-			return sendReply(message, "Provide an Item Name!")
-		}
-
-		let itemName = args.join(' ').toLowerCase()
+	data: new SlashCommandBuilder()
+		.setName('undone')
+		.setDescription("Removes an item from 'done'")
+		.addStringOption(option =>
+			option.setName("item")
+				.setDescription("the item you want to remove from 'done'")
+				.setRequired(true)),
+	async execute(interaction: ChatInputCommandInteraction) {
+		let itemName = interaction.options.getString("item", true)
 		
 		const item = nameToItemMap.get(itemName)
 
 		if (!item) {
-			return sendReply(message, "Item doesn't exist!")
+			return sendReply(interaction, "Item doesn't exist!")
 		}
 
 		removeItem(itemName, item.category, StatusType.finished)
         reloadEmbeds()
-        return sendReply(message, `Successfully readded: ${item.name}`)
+        return sendReply(interaction, `Successfully readded: ${item.name}`)
 	},
 };

@@ -1,12 +1,14 @@
-import { Message, MessageEmbed, TextChannel } from "discord.js";
-import { sendEmbed } from "../DiscordBot/Bot";
+import { EmbedBuilder, SlashCommandBuilder, ChatInputCommandInteraction } from "discord.js";
+import { replyEmbed } from "../DiscordBot/Bot";
 import { itemArrays } from "..";
 import { ResponseItem } from "../Types/Types";
 import { doneOrCrafted } from "../ItemHandler/ItemHandler";
 
 module.exports = {
-	name: 'ingredients',
-	execute(args: string[], message: Message) {
+	data: new SlashCommandBuilder()
+		.setName('ingredients')
+		.setDescription("Returns a list of missing ingredients"),
+	async execute(interaction: ChatInputCommandInteraction) {
         let items: ResponseItem[] = []
 
         Object.keys(itemArrays).forEach(type => {
@@ -18,7 +20,7 @@ module.exports = {
 
         const list = getIngredientList(items)
 
-		return sendEmbed(message.channel as TextChannel, genIngredientEmbed(list))
+		return replyEmbed(interaction, genIngredientEmbed(list))
 	},
 };
 
@@ -46,7 +48,7 @@ function getIngredientList(items: ResponseItem[]) {
 function genIngredientEmbed(ingredientMap: Map<string, number>, customTitle?: string) {
     const ingredientMapSorted = new Map([...ingredientMap.entries()].sort((a, b) => b[1] - a[1]));
 
-    let embed = new MessageEmbed()
+    let embed = new EmbedBuilder()
     embed.setTitle(customTitle ?? "Needed Ingredients")
     embed.setDescription("Shows all needed ingredients (not counting subParts like blades and not counting crafting cost for subparts like systems)")
     embed.setColor(0x00AE86)
@@ -57,12 +59,12 @@ function genIngredientEmbed(ingredientMap: Map<string, number>, customTitle?: st
     if (items.length > 30) {
         let index = 1;
         while (items.length > 0) {
-            embed.addField(`Ingredients ${index}`, items.splice(0, 30).join("\n"))
+            embed.addFields({name: `Ingredients ${index}`, value: items.splice(0, 30).join("\n")})
             items = items.splice(0, 30)
             index++
         }
     } else {
-        embed.addField("Ingredients", items.join("\n"))
+        embed.addFields({name: "Ingredients", value: items.join("\n")})
     }
     return embed;
 }

@@ -1,32 +1,34 @@
-import { Message, MessageEmbed, TextChannel } from "discord.js";
-import { sendEmbed, sendReply } from "../DiscordBot/Bot";
+import { Message, EmbedBuilder, TextChannel, SlashCommandBuilder, ChatInputCommandInteraction } from "discord.js";
+import { replyEmbed, sendEmbed, sendReply } from "../DiscordBot/Bot";
 import { nameToItemMap } from "..";
 import { DropItem, ResponseItem } from "../Types/Types";
 import { getConfigValue } from "../Config/Config";
 
 module.exports = {
-	name: 'itemInfo',
-	execute(args: string[], message: Message) {
-        if (args.length === 0) {
-			return sendReply(message, "Provide an Item Name!")
-		}
-
-		let itemName = args.join(' ').toLowerCase()
+	data: new SlashCommandBuilder()
+		.setName('iteminfo')
+		.setDescription("Provides information about an item")
+		.addStringOption(option =>
+			option.setName("item")
+				.setDescription("the item you want to get info about")
+				.setRequired(true)),
+	async execute(interaction: ChatInputCommandInteraction) {
+		let itemName = interaction.options.getString("item", true)
 		
 		const item = nameToItemMap.get(itemName)
 
 		if (!item) {
-			return sendReply(message, "Item doesn't exist!")
+			return sendReply(interaction, "Item doesn't exist!")
 		}
 
-		return sendEmbed(message.channel as TextChannel, generateInfoEmbed(item))
+		return replyEmbed(interaction, generateInfoEmbed(item))
 	},
 };
 
 const generateInfoEmbed = (item: ResponseItem) => {
 	const maxCharacterCountInEmbedField = getConfigValue("maxCharacterCountInEmbedField")
 
-	const embed = new MessageEmbed()
+	const embed = new EmbedBuilder()
 	embed.setTitle(item.name)
 	embed.setColor("#00AE86")
 	embed.setThumbnail(item.wikiaThumbnail)
@@ -54,13 +56,13 @@ const generateInfoEmbed = (item: ResponseItem) => {
 			infoCopy = infoCopy.slice(0, lastEntryIndex);
 			info = info.slice(lastEntryIndex + 1);
 
-			embed.addField(component.name + ++linesCount, infoCopy)
+			embed.addFields({name: component.name + ++linesCount, value: infoCopy})
 		}
 		if (component.name === "Blueprint" && info.length === 0 && item.bpCost) {
 			console.log("Here", component)
-			embed.addField("Blueprint: " + component.itemCount, "Market: " + item.bpCost)
+			embed.addFields({name: "Blueprint: " + component.itemCount, value: "Market: " + item.bpCost})
 		} else {
-			embed.addField(component.name + ": " + component.itemCount, info.length > 0 ? info : "No drops")
+			embed.addFields({name: component.name + ": " + component.itemCount, value: info.length > 0 ? info : "No drops"})
 		}
 	})
 

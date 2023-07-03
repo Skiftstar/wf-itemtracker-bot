@@ -1,25 +1,27 @@
-import { Message } from "discord.js";
+import { ChatInputCommandInteraction, Message, SlashCommandBuilder } from "discord.js";
 import { sendReply } from "../DiscordBot/Bot";
 import { StatusType, removeItem } from "../ItemHandler/ItemHandler";
 import { nameToItemMap, reloadEmbeds } from "..";
 
 module.exports = {
-	name: 'uncraft',
-	execute(args: string[], message: Message) {
-        if (args.length === 0) {
-			return sendReply(message, "Provide an Item Name!")
-		}
-
-		let itemName = args.join(' ').toLowerCase()
+	data: new SlashCommandBuilder()
+		.setName('uncraft')
+		.setDescription("Removes an item from 'crafted'")
+		.addStringOption(option =>
+			option.setName("item")
+				.setDescription("the item you want to remove from 'crafted'")
+				.setRequired(true)),
+	async execute(interaction: ChatInputCommandInteraction) {
+		let itemName = interaction.options.getString("item", true)
 		
 		const item = nameToItemMap.get(itemName)
 
 		if (!item) {
-			return sendReply(message, "Item doesn't exist!")
+			return sendReply(interaction, "Item doesn't exist!")
 		}
 
 		removeItem(itemName, item.category, StatusType.crafted)
         reloadEmbeds()
-        return sendReply(message, `Successfully uncrafted: ${item.name}`)
+        return sendReply(interaction, `Successfully uncrafted: ${item.name}`)
 	},
 };
