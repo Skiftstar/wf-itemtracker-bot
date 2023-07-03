@@ -63,22 +63,32 @@ export const createChannels = (guildId: string, categoryName: string) => {
     const guild = client.guilds.cache.get(guildId)!
     const channels: ChannelIdRecord = {}
 
+    const channelNames = Object.keys(getConfigValue("weaponChannels"))
+
     guild.channels.create({ name: categoryName, type: ChannelType.GuildCategory }).then(category => {
-        Object.keys(getConfigValue("weaponChannels")).forEach((channelName: string) => {
-            guild.channels.create({ name: channelName }).then(channel => {
-                channel.setParent(category.id)
-                channels[channelName] = channel.id   
+        const promise = new Promise((resolve, reject) => {
+            channelNames.forEach((channelName: string, index) => {
+                guild.channels.create({ name: channelName }).then(channel => {
+                    channel.setParent(category.id)
+                    channels[channelName] = channel.id
+                    if (index === channelNames.length - 1) {
+                        resolve(true)
+                    }
+                })
             })
         })
-        guild.channels.create({ name: "errors" }).then(channel => {
-            channel.setParent(category.id)
-            setConfigValue("errorChannel", channel.id)
+
+        promise.then(result => {
+            guild.channels.create({ name: "errors" }).then(channel => {
+                channel.setParent(category.id)
+                setConfigValue("errorChannel", channel.id)
+
+                setConfigValue("weaponChannels", channels)
+                setConfigValue("guildId", guildId)
+        
+                setup()
+            })
         })
-
-        setConfigValue("weaponChannels", channels)
-        setConfigValue("guildId", guildId)
-
-        setup()
     })
 
 }

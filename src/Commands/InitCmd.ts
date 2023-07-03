@@ -46,7 +46,7 @@ module.exports = {
                 //If Yes, then override
                 if (confirmation.customId === 'confirm') {
                     create()
-                    await confirmation.update({ content: 'Channels created!' })
+                    await confirmation.update({ content: 'Channels created!', components: [] })
                 //If no, then just cancel
                 } else if (confirmation.customId === 'cancel') {
                     await confirmation.update({ content: 'Action cancelled', components: [] });
