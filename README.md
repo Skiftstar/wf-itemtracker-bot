@@ -1,4 +1,4 @@
-# wf-bot
+# wf-itemtracker-bot
 
 Hej! This bot is designed to track your item progress in Warframe, while providing some useful utilities like drop infos and a list of remaining required metarials.
 The bot is designed to for one person on a seperate Server. There isn't support for multiple people on a single Server yet!
