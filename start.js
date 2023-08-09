@@ -4,7 +4,7 @@ const { spawn } = require('child_process');
 async function pullChangesAndStart() {
   try {
     // Pull changes from the Git repository
-    await runCommand('git', ['pull']);
+    // await runCommand('git', ['pull']);
     // Compile TS Code
     await runCommand('npx', ['tsc']);
 
