@@ -88,6 +88,7 @@ function generateEmbed(items: Item[]) {
 
     items.forEach(item => {
         let itemName = item.data.name
+        const words = itemName.split(" ")
 
         if (getStatus(itemName, item.data.category, StatusType.finished)) {
             return;
@@ -97,7 +98,6 @@ function generateEmbed(items: Item[]) {
             itemName += getConfigValue("craftedFlair")
         }
 
-        const words = itemName.split(" ")
         let foundFittingVariant = false;
 
         for (const variant of variants) {
